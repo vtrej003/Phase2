@@ -1,11 +1,8 @@
-   /* cs152-miniL phase1 */
 %{
- /* write your C code here for definitions of variables and including headers */
-        #include "y.tab.h"
-        int currLine = 1, currPos = 1;
+      #include "miniL-parser.h"
+      int currLine = 1, currPos = 1;
 %}
 
- /* some common rules */
 DIGIT           [0-9]
 
 COMMENT         ##.*
@@ -15,7 +12,7 @@ INVAILDIDENTIFIER_STARTING [0-9|_][0-9A-Za-z]+
 INVAILDIDENTIFIER_ENDING [a-zA-Z][a-zA-Z0-9]*[_]
 
 %%
- /* specific lexer rules in regex */
+ 
 "function"      {return FUNCTION; currPos += yyleng;}
 "beginparams"   {return BEGIN_PARAMS; currPos += yyleng;}
 "endparams"     {return END_PARAMS; currPos += yyleng;}

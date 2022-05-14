@@ -7,7 +7,7 @@ void yyerror(const char *msg);
 extern int currLine;
 extern int currPos;
 extern const char* yytext;
-FILE * yyin;
+extern FILE * yyin;
 %}
 
 %union{
@@ -30,19 +30,21 @@ char* ident_val;
 %left MULT DIV MOD
 
 %%
-program: functions {printf("prog_start -> functions \n");}
+program: /*empty*/ {printf("program -> epsilon\n");} 
+        | functions {printf("prog_start -> functions \n");}
+        ;
       
 
 functions: /*empty*/ {printf("functions -> epsilon\n");}
 	      | function functions {printf("functions -> function functions\n");} 
         ;
 
-function: FUNCTION ident SEMICOLON BEGIN_PARAMS dec END_PARAMS BEGIN_LOCALS dec END_LOCALS BEGIN_BODY statements END_BODY
-        {printf("function -> FUNCTION ident SEMICOLON BEGIN_PARAMS dec END_PARAMS BEGIN_LOCALS dec END_LOCALS BEGIN_BODY statements END_BODY\n");}
+function: FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY
+        {printf("function -> FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");}
         ;
 
-dec: /*empty*/ {printf("declarations -> epsilon\n");}
-        |declaration SEMICOLON dec {printf("declaration -> declaration SEMICOLON declarations\n");}
+declarations: /*empty*/ {printf("declarations -> epsilon\n");}
+        | declaration SEMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations\n");}
         ;
 
 declaration: identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
@@ -54,6 +56,9 @@ identifiers: ident {printf("identifiers -> ident\n");}
         | ident COMMA identifiers {printf("identifiers -> ident COMMA identifiers\n");}
         ;
 
+ident: IDENT {printf("ident -> IDENT %s\n",yytext);}
+        ;
+        
 statement: var ASSIGN expression {printf("statement -> var ASSIGN expression\n");}
         | IF bool_exp THEN statements ENDIF {printf("statement -> IF bool_exp THEN statements ENDIF\n");}
         | IF bool_exp THEN statements ELSE statements ENDIF {printf("statement -> IF bool_exp THEN statements ELSE statements ENDIF\n");}
@@ -126,8 +131,7 @@ preloop: /*empty*/ {printf("preloop -> epsilon\n");}
 var: ident {printf("var -> ident \n");}
         | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf("var -> ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET\n");}
         ;
-ident: IDENT {printf("ident -> IDENT %s\n",yytext);}
-        ;
+
 %%
 int main(int argc, char ** argv){
         if(argc > 1){
